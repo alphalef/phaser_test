@@ -5,6 +5,7 @@ export default class extends Phaser.Scene
     /** @type {Phaser.Physics.Arcade.StaticGroup} **/
     player
     platforms
+    cursors
 
     constructor()
     {
@@ -16,10 +17,13 @@ export default class extends Phaser.Scene
         this.load.image('platform', 'assets/ground_grass.png')
 
         this.load.image('bunny-stand', 'assets/bunny1_stand.png')
+
+        this.cursors = this.input.keyboard.createCursorKeys()
     }
     create()
     {
         this.add.image(240,320,'background')
+            .setScrollFactor(1, 0)
         
         this.platforms = this.physics.add.staticGroup()
 
@@ -47,8 +51,10 @@ export default class extends Phaser.Scene
         this.player.body.checkCollision.right = false
 
         this.cameras.main.startFollow(this.player)
+        this.cameras.main.setDeadzone(this.scale.width*1.5)
+
     }
-    update()
+    update(t, dt)
     {
         this.platforms.children.iterate(child => {
             /** @type {Phaser.Physics.Arcade.Sprite} */
@@ -68,6 +74,35 @@ export default class extends Phaser.Scene
         if(touchingDown)
         {
             this.player.setVelocityY(-300)
+        }
+
+        if(this.cursors.right.isDown && !touchingDown) 
+        {
+            this.player.setVelocityX(200)
+        }
+        else if(this.cursors.left.isDown && !touchingDown) 
+        {
+            this.player.setVelocityX(-200)
+        }
+        else  
+        {
+            this.player.setVelocityX(0)
+        }
+
+        this.horizontalWrap(this.player)
+    }
+
+    horizontalWrap(sprite)
+    {
+        const halfWidth = sprite.displaywidth * 0.5
+        const gameWidth = this.scale.width
+        if(sprite.x < -halfWidth)
+        {
+            sprite.x = gameWidth + halfWidth
+        }
+        else if(sprite.x > gameWidth + halfWidth)
+        {
+            sprite.x = -halfWidth
         }
     }
 }
