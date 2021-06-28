@@ -94,8 +94,9 @@ export default class extends Phaser.Scene
 
     horizontalWrap(sprite)
     {
-        const halfWidth = sprite.displaywidth * 0.5
+        const halfWidth = sprite.width * 0.5
         const gameWidth = this.scale.width
+
         if(sprite.x < -halfWidth)
         {
             sprite.x = gameWidth + halfWidth
